@@ -1,1 +1,1 @@
-# CodebaseCase
+Projeyi klonlayıp çalıştırmanız yeterli olacaktır.
