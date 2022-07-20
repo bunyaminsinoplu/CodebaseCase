@@ -1,0 +1,55 @@
+﻿@model DataAccessLayer.Global.Report
+@{
+    ViewData["Title"] = "Report";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="col-12">
+    <form method="post" enctype="multipart/form-data" id="frmReport">
+        <div class="row text-left">
+            <div class="col-6 col-sm-4 col-4 form-group mb-4">
+                <label class="form-label">Başlangıç Tarihi</label>
+                <input asp-for="StartDate" type="date" class="form-control" required>
+
+            </div>
+
+            <div class="col-6 col-sm-4 form-group mb-4">
+                <label class="form-label">Bitiş Tarihi</label>
+                <input asp-for="EndDate" type="date" class="form-control" required>
+
+            </div>
+            <div class="col-12 col-sm-4 mt-4 mb-3">
+                <a onclick="FncLoadReport()" class="btn btn-secondary btn-block">Getir</a>
+            </div>
+        </div>
+        <div class="col-12 border-top mb-4"></div>
+    </form>
+    <div class="col-12" id="divReport">
+    </div>
+</div>
+<script>
+    function FncLoadReport() {
+        var form = $("#frmReport");
+        if (form.valid() == false) {
+            return false;
+        }
+        else {
+            $.ajax({
+                url: '/Home/GetReport',
+                type: "POST",
+                data: form.serialize(),
+                success: function(data) {
+                    if (data.statusCode != 400) {
+                        $('#divReport').html(data);
+                    }
+                    else {
+                        Toastify({
+                            text: data.message,
+                            duration: 3000
+                        }).showToast();
+                    }
+                }
+            })
+        }
+    }
+</script>

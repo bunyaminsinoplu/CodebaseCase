@@ -1,0 +1,54 @@
+﻿@using DataAccessLayer.Global
+@model Report
+
+<div class="row">
+    <div class=col-12>
+        <div class="main-content">
+            <div class="col-12">
+                <div class="table-responsive">
+                    <table id="tbl_Report" class="display table table-striped table-bordered" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">Ürün Adı</th>
+                                <th scope="col">Müşteri Adı</th>
+                                <th scope="col">Adet</th>
+                                <th scope="col">Tarih</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{
+                                int i = 0;
+                            }
+                            @foreach (var sale in Model.SaleList)
+                            {
+                                i++;
+                                <tr>
+                                    <th scope="row">@i</th>
+                                    <td>@sale.Product.ProductName</td>
+                                    <td>@sale.CustomerName</td>
+                                    <td>@sale.Piece</td>
+                                    <td>@sale.CreatedDate</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <script>
+    $(document).ready(function() {
+        $('#tbl_Report').DataTable({
+            "language": {
+                "url": "https://cdn.datatables.net/plug-ins/1.10.20/i18n/Turkish.json",
+            },
+            dom: 'Bfrtip',
+            buttons: [
+            'excelHtml5',
+        ]
+        }); // feature enable/disable
+    });
+</script>

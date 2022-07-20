@@ -1,0 +1,65 @@
+﻿@using DataAccessLayer.Models
+@model Product
+
+<div class="modal hide fade" id="productAddEditModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Ürün Ekle/Güncelle</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="col-12">
+                    <form method="post" enctype="multipart/form-data" id="frmProductAddEdit" autocomplete="off">
+                        <div class="row text-left">
+                            <div class="col-12 form-group mb-0">
+                                <span class="form-validation small" style="color:red">*</span>
+                                <label class="form-label" for="CheckArticle">Ürün İsmi</label>
+                                <input asp-for="ProductName" type="text" class="form-control" required id="Name" placeholder="Ürün İsmi">
+                            </div>
+
+                            <div class="col-12 form-group mb-0">
+                                <span class="form-validation small" style="color:red">*</span>
+                                <label class="form-label" for="CheckArticle">Adet</label>
+                                <input asp-for="InPiece" type="number" class="form-control" required id="Name" placeholder="Ürün Adeti">
+                            </div>
+                        </div>
+
+                        <input asp-for="Id" type="hidden" class="form-control" id="Id">
+                    </form>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                        <input class="btn btn-primary ml-2" onclick="ProductAddEditSave()" type="submit" value="Kaydet">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    function ProductAddEditSave() {
+        var form = $("#frmProductAddEdit");
+        if (form.valid() == false) {
+            return false;
+        }
+        else {
+            $.ajax({
+                url: '/Home/SaveProduct',
+                type: 'POST',
+                dataType: 'Json',
+                data: form.serialize(),
+                success: function(result) {
+                    Toastify({
+                        text: result.message,
+                        duration: 3000
+                    }).showToast();
+                    if (result.statusCode == 200) {
+                        location.reload();
+                    }
+                }
+            });
+        }
+    }
+</script>

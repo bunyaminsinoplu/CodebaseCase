@@ -1,0 +1,137 @@
+﻿@using DataAccessLayer.Models
+@model List<Product>
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+
+<div id="productAddEdit"></div>
+<div id="saleAddEdit"></div>
+
+<div class="main-content">
+    <div class="separator-breadcrumb border-top"></div>
+
+    <div class="row">
+        <div class="col-12">
+            <a href="javascript:;" onclick="ProductAddEdit('')" class="btn btn-outline-secondary btn-block btn-xs m-3" type="button">Ürün Ekle</a>
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table id="tbl_Product" class="display table table-striped table-bordered" style="width:100%">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Ürün Adı</th>
+                    <th scope="col">Giriş Adedi</th>
+                    <th scope="col">Çıkışlar</th>
+                    <th scope="col">Alım Tarihi</th>
+                    <th scope="col" class="text-center"><span class="small">Düzenle | Sil | Çıkış Yap</span></th>
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    int index = 0;
+                }
+                @foreach (var product in Model)
+                {
+                    index++;
+                    <tr class="@product.Id">
+                        <th scope="row">@index</th>
+                        <td>@product.ProductName</td>
+                        <td>@product.InPiece</td>
+                        <td>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th class="small">Müşteri Adı</th>
+                                        <th class="small">Adet</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var sale in product.Sales)
+                                    {
+                                        <tr>
+                                            <td class="small">@sale.CustomerName</td>
+                                            <td class="small">@sale.Piece</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </td>
+                        <td>@product.CreatedDate.Value.ToShortDateString()</td>
+                        <td class="text-center">
+                            <button type="button" onclick="ProductAddEdit('@product.Id')" class="btn btn-success">Düzenle</button>
+                            <button type="button" onclick="ProductDelete('@product.Id')" class="btn btn-danger">Sil</button>
+                            <button type="button" onclick="ProductSale('@product.Id')" class="btn btn-primary">Çıkış Yap</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    function ProductAddEdit(id) {
+        $.ajax({
+            url: '/Home/ProductAddEdit',
+            type: "POST",
+            data: { productId: id },
+            success: function(data) {
+                if (data.statusCode != 400) {
+                    $('#productAddEdit').html(data);
+                    $('#productAddEditModal').modal('show');
+                }
+                else {
+                    Toastify({
+                        text: data.message,
+                        duration: 3000
+                    }).showToast();
+                }
+            }
+        })
+    }
+
+    function ProductSale(id) {
+        $.ajax({
+            url: '/Home/ProductSale',
+            type: "POST",
+            data: { productId: id },
+            success: function(data) {
+                $('#saleAddEdit').html(data);
+                $('#saleAddEditModal').modal('show');
+            }
+        })
+    }
+
+    function ProductDelete(id) {
+        if (confirm("Silmek istediğinize emin misiniz?") == true) {
+            $.ajax({
+                url: '/Home/DeleteProduct',
+                data: { productId: id },
+                success: function(result) {
+                    Toastify({
+                        text: result.message,
+                        duration: 3000
+                    }).showToast();
+                    if (result.statusCode == 200) {
+                        location.reload();
+                    }
+                }
+            });
+        }
+    }
+
+    function BankDelete(i) {
+        Myo_DeleteOp(i, '/Ayarlar/BankaSil', 'tbl_Bank', '', '');
+    }
+
+    $(document).ready(function() {
+        $('#tbl_Product').DataTable({
+            "language": {
+                "url": "https://cdn.datatables.net/plug-ins/1.10.20/i18n/Turkish.json",
+            }
+        }); // feature enable/disable
+    });
+</script>
